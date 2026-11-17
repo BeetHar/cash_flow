@@ -1,0 +1,108 @@
+{% extends "web/base.html" %}
+
+{% block title %}นำเข้าผู้ขาย · Cash Flow{% endblock %}
+
+{% block content %}
+<section class="page-heading compact-heading">
+    <div>
+        <a class="back-link" href="{% url 'web:supplier-list' %}">← กลับไปหน้าผู้ขาย</a>
+        <p class="eyebrow">Supplier import</p>
+        <h1>นำเข้าผู้ขายจาก Excel</h1>
+        <p>อัปโหลดไฟล์ข้อมูลผู้ผลิตจากระบบเดิม ระบบจะแสดงสิ่งที่จะเปลี่ยนให้ตรวจก่อนบันทึก</p>
+    </div>
+</section>
+
+{% if not plan %}
+<form class="editor-layout" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <section class="editor-card">
+        {% include "web/procurement/_field.html" with field=form.file %}
+        <ul class="import-rules">
+            <li>เครดิตอ่านจากชื่อกลุ่มในชีต “เครดิต” เช่น “เครดิต 30 วัน” หรือ “ภายใน 7 วัน” และเจ้าหนี้เงินสดนับเป็น 0 วัน</li>
+            <li>กลุ่มที่ไม่มีจำนวนวัน จะติดป้าย <strong>เครดิตไม่ระบุ</strong> ให้ฝ่ายบัญชีกรอกเอง และการนำเข้าครั้งถัดไปจะไม่ลบค่าที่กรอกไว้</li>
+            <li>ผู้ขายที่มีหมายเหตุ “ยกเลิกซื้อขาย” จะถูกปิดใช้งาน</li>
+            <li>จับคู่ด้วยรหัสผู้ขาย รายที่มีอยู่แล้วจะอัปเดต รายใหม่จะถูกเพิ่ม ไม่มีการลบ</li>
+        </ul>
+        <div class="form-actions">
+            <a class="button button-secondary" href="{% url 'web:supplier-list' %}">ยกเลิก</a>
+            <button class="button button-primary" type="submit">ตรวจไฟล์</button>
+        </div>
+    </section>
+</form>
+{% else %}
+<section class="import-summary" aria-label="สรุปผลการตรวจไฟล์">
+    <div><span>ทั้งหมด</span><strong>{{ plan.counts.total }}</strong></div>
+    <div class="summary-create"><span>เพิ่มใหม่</span><strong>{{ plan.counts.create }}</strong></div>
+    <div class="summary-update"><span>อัปเดต</span><strong>{{ plan.counts.update }}</strong></div>
+    <div><span>ไม่เปลี่ยน</span><strong>{{ plan.counts.unchanged }}</strong></div>
+    <div><span>ปิดใช้งาน</span><strong>{{ plan.counts.inactive }}</strong></div>
+    <div class="summary-warn"><span>เครดิตไม่ระบุ</span><strong>{{ plan.counts.credit_unknown }}</strong></div>
+</section>
+
+{% if plan.warnings %}
+    <div class="form-alert import-warnings" role="status">
+        {% for warning in plan.warnings %}<p>{{ warning }}</p>{% endfor %}
+    </div>
+{% endif %}
+
+
+<section class="data-panel import-panel">
+    <details{% if plan.counts.update %} open{% endif %}>
+        <summary><h2>จะอัปเดต {{ plan.counts.update }} ราย</h2></summary>
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead><tr><th scope="col">รหัส</th><th scope="col">ผู้ขาย</th><th scope="col">สิ่งที่เปลี่ยน</th></tr></thead>
+                <tbody>
+                    {% for item in plan.items %}{% if item.action == "update" %}
+                        <tr>
+                            <td class="doc-link">{{ item.row.code }}</td>
+                            <td>{{ item.row.name }}</td>
+                            <td>
+                                <ul class="change-list change-list-compact">
+                                    {% for change in item.changes %}
+                                        <li><span class="change-field">{{ change.label }}</span> <del>{{ change.before }}</del> → <ins>{{ change.after }}</ins></li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endif %}{% empty %}{% endfor %}
+                    {% if not plan.counts.update %}<tr><td colspan="3" class="empty-cell">ไม่มีรายที่ต้องอัปเดต</td></tr>{% endif %}
+                </tbody>
+            </table>
+        </div>
+    </details>
+</section>
+
+<section class="data-panel import-panel">
+    <details{% if plan.counts.create and plan.counts.create <= 50 %} open{% endif %}>
+        <summary><h2>จะเพิ่มใหม่ {{ plan.counts.create }} ราย</h2></summary>
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead><tr><th scope="col">รหัส</th><th scope="col">ผู้ขาย</th><th scope="col">ประเภท</th><th class="num" scope="col">เครดิต</th><th scope="col">สถานะ</th></tr></thead>
+                <tbody>
+                    {% for item in plan.items %}{% if item.action == "create" %}
+                        <tr class="{% if not item.row.is_active %}row-cancelled{% endif %}">
+                            <td class="doc-link">{{ item.row.code }}</td>
+                            <td>{{ item.row.name }}</td>
+                            <td>{{ item.row.supplier_type|default:"—" }}</td>
+                            <td class="num">{% if item.row.credit_days is None %}<span class="status-chip credit-unknown">ไม่ระบุ</span>{% else %}{{ item.row.credit_days }} วัน{% endif %}</td>
+                            <td>{% if item.row.is_active %}ใช้งาน{% else %}ปิดใช้งาน{% endif %}</td>
+                        </tr>
+                    {% endif %}{% endfor %}
+                    {% if not plan.counts.create %}<tr><td colspan="5" class="empty-cell">ไม่มีผู้ขายใหม่</td></tr>{% endif %}
+                </tbody>
+            </table>
+        </div>
+    </details>
+</section>
+
+<form class="import-confirm" method="post" action="{% url 'web:supplier-import-confirm' %}">
+    {% csrf_token %}
+    <p>ไฟล์ <strong>{{ file_name }}</strong> · ทุกการเพิ่มและเปลี่ยนจะบันทึกในประวัติพร้อมชื่อผู้นำเข้า</p>
+    <div class="form-actions">
+        <a class="button button-secondary" href="{% url 'web:supplier-import' %}">เลือกไฟล์อื่น</a>
+        <button class="button button-primary" type="submit"{% if not plan.counts.create and not plan.counts.update %} disabled{% endif %}>ยืนยันนำเข้า</button>
+    </div>
+</form>
+{% endif %}
+{% endblock %}

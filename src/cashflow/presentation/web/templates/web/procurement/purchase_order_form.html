@@ -1,0 +1,72 @@
+{% extends "web/base.html" %}
+
+{% block title %}{% if mode == 'create' %}บันทึกใบสั่งซื้อ{% else %}แก้ไข {{ purchase_order.number }}{% endif %} · Cash Flow{% endblock %}
+
+{% block content %}
+<section class="page-heading compact-heading">
+    <div>
+        {% if mode == 'create' %}
+            <a class="back-link" href="{% url 'web:purchase-order-list' %}">← กลับไปหน้าใบสั่งซื้อ</a>
+        {% else %}
+            <a class="back-link" href="{% url 'web:purchase-order-detail' purchase_order.pk %}">← กลับไป {{ purchase_order.number }}</a>
+        {% endif %}
+        <p class="eyebrow">Purchase order</p>
+        <h1>{% if mode == 'create' %}บันทึกใบสั่งซื้อ{% else %}แก้ไข {{ purchase_order.number }}{% endif %}</h1>
+        <p>{% if mode == 'create' %}กรอกตามข้อมูลในระบบ PO เดิม{% else %}ทุกช่องที่เปลี่ยนจะขึ้นในประวัติ พร้อมชื่อคนแก้และเวลา{% endif %}</p>
+    </div>
+</section>
+
+{% if not has_suppliers %}
+    <section class="empty-panel editor-layout">
+        <p>ต้องมีผู้ขายอย่างน้อย 1 รายก่อนบันทึกใบสั่งซื้อ</p>
+        {% if can_manage_suppliers %}
+            <a class="button button-primary" href="{% url 'web:supplier-create' %}?next=po-create">เพิ่มผู้ขาย</a>
+        {% else %}
+            <p class="muted-text">ติดต่อผู้ที่มีสิทธิ์จัดการผู้ขายให้เพิ่มข้อมูลก่อน</p>
+        {% endif %}
+    </section>
+{% else %}
+<form class="editor-layout editor-layout-wide" method="post" novalidate>
+    {% csrf_token %}
+    <section class="editor-card">
+        {% if form.non_field_errors %}
+            <div class="form-alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+        {% endif %}
+
+        <div class="form-grid form-grid-3">
+            {% include "web/procurement/_field.html" with field=form.number %}
+            <div class="field-group field-span-2{% if form.supplier.errors %} field-group-error{% endif %}">
+                {{ form.supplier.label_tag }}{{ form.supplier }}
+                {% for error in form.supplier.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                {% if can_manage_suppliers %}<a class="field-help" href="{% url 'web:supplier-create' %}?next=po-create">ไม่มีในรายการ? เพิ่มผู้ขาย</a>{% endif %}
+            </div>
+            {% include "web/procurement/_field.html" with field=form.total_amount %}
+            {% include "web/procurement/_field.html" with field=form.ordered_at %}
+            {% include "web/procurement/_field.html" with field=form.delivery_date %}
+            {% include "web/procurement/_field.html" with field=form.due_date %}
+            {% include "web/procurement/_field.html" with field=form.status %}
+            {% include "web/procurement/_field.html" with field=form.approval_status %}
+            {% include "web/procurement/_field.html" with field=form.note span=3 %}
+        </div>
+
+        {% if form.reason %}
+            <div class="form-divider"></div>
+            <div class="form-grid">
+                {% include "web/procurement/_field.html" with field=form.reason span=2 %}
+            </div>
+        {% endif %}
+
+        <div class="form-actions">
+            {% if mode == 'create' %}
+                <a class="button button-secondary" href="{% url 'web:purchase-order-list' %}">ยกเลิก</a>
+                <button class="button button-secondary" type="submit" name="save_and_new" value="1">บันทึกแล้วกรอกใบต่อไป</button>
+                <button class="button button-primary" type="submit">บันทึก</button>
+            {% else %}
+                <a class="button button-secondary" href="{% url 'web:purchase-order-detail' purchase_order.pk %}">ยกเลิก</a>
+                <button class="button button-primary" type="submit">บันทึกการแก้ไข</button>
+            {% endif %}
+        </div>
+    </section>
+</form>
+{% endif %}
+{% endblock %}

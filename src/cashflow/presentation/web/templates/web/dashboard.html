@@ -1,0 +1,103 @@
+{% extends "web/base.html" %}
+{% load web_format %}
+
+{% block title %}กระแสเงินสด · Cash Flow{% endblock %}
+
+{% block content %}
+<section class="dashboard-heading">
+    <div>
+        <p class="eyebrow">Cash flow workspace</p>
+        <h1>กระแสเงินสด</h1>
+    </div>
+    <span class="prototype-chip">
+        <span aria-hidden="true"></span>
+        ข้อมูลตัวอย่าง
+    </span>
+</section>
+
+<section class="cashflow-panel" aria-labelledby="cashflow-table-title">
+    <header class="cashflow-panel-header">
+        <div>
+            <h2 id="cashflow-table-title">รายการเคลื่อนไหว</h2>
+            <p>ตัวอย่างสำหรับทดลองรูปแบบหน้าจอ ก่อนเชื่อมข้อมูลจริง</p>
+        </div>
+        <div class="balance-summary">
+            <span>เงินคงเหลือล่าสุด</span>
+            <strong>฿{{ closing_balance }}</strong>
+        </div>
+    </header>
+
+    <div class="cashflow-table-wrap">
+        <table class="cashflow-table">
+            <caption class="visually-hidden">ตารางรายการกระแสเงินสดตัวอย่าง</caption>
+            <thead>
+                <tr>
+                    <th scope="col">วันที่</th>
+                    <th scope="col">รายการ</th>
+                    <th class="amount-column" scope="col">เงินเข้า</th>
+                    <th class="amount-column" scope="col">เงินออก</th>
+                    <th class="amount-column" scope="col">เงินคงเหลือ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in cashflow_rows %}
+                    <tr>
+                        <td class="date-cell">{{ row.date }}</td>
+                        <td class="description-cell">{{ row.description }}</td>
+                        <td class="amount-cell amount-in">{% if row.inflow %}+฿{{ row.inflow }}{% else %}<span class="empty-amount">—</span>{% endif %}</td>
+                        <td class="amount-cell amount-out">{% if row.outflow %}-฿{{ row.outflow }}{% else %}<span class="empty-amount">—</span>{% endif %}</td>
+                        <td class="amount-cell balance-cell">฿{{ row.balance }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="2" scope="row">รวมรายการ</th>
+                    <td class="amount-cell amount-in">+฿{{ total_inflow }}</td>
+                    <td class="amount-cell amount-out">-฿{{ total_outflow }}</td>
+                    <td class="amount-cell balance-cell">฿{{ closing_balance }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</section>
+{% if po_outflows is not None %}
+<section class="cashflow-panel forecast-panel" aria-labelledby="po-forecast-title">
+    <header class="cashflow-panel-header">
+        <div>
+            <h2 id="po-forecast-title">เงินออกที่คาดว่าจะจ่ายตามใบสั่งซื้อ</h2>
+            <p>ข้อมูลจริงจาก PO ที่อนุมัติแล้วและยังไม่ปิด ใช้ยอดรวม VAT เรียงตามวันครบกำหนดจ่าย</p>
+        </div>
+        <div class="balance-summary">
+            <span>รวมที่ต้องจ่าย</span>
+            <strong class="amount-out">฿{{ po_outflow_total|money }}</strong>
+        </div>
+    </header>
+    <div class="cashflow-table-wrap">
+        <table class="cashflow-table">
+            <caption class="visually-hidden">เงินออกที่คาดว่าจะจ่ายตามใบสั่งซื้อ</caption>
+            <thead>
+                <tr>
+                    <th scope="col">ครบกำหนดจ่าย</th>
+                    <th scope="col">รายการ</th>
+                    <th scope="col">สถานะ</th>
+                    <th class="amount-column" scope="col">เงินออก</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in po_outflows %}
+                    <tr>
+                        <td class="date-cell">{{ row.due_date|thai_date }}{% if row.is_overdue %}<span class="overdue-flag">เลยกำหนด</span>{% endif %}{% if row.credit_unknown %}<span class="overdue-flag credit-flag">เครดิตไม่ระบุ</span>{% endif %}</td>
+                        <td class="description-cell"><a class="doc-link" href="{% url 'web:purchase-order-detail' row.purchase_order_id %}">{{ row.number }}</a> {{ row.supplier_name }}</td>
+                        <td><span class="status-chip status-{{ row.status }}">{{ row.status_label }}</span></td>
+                        <td class="amount-cell amount-out">-฿{{ row.amount|money }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="empty-cell">ยังไม่มีใบสั่งซื้อที่รอจ่าย</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

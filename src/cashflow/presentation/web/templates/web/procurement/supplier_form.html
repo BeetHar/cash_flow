@@ -1,0 +1,47 @@
+{% extends "web/base.html" %}
+
+{% block title %}{% if mode == 'create' %}เพิ่มผู้ขาย{% else %}แก้ไขผู้ขาย{% endif %} · Cash Flow{% endblock %}
+
+{% block content %}
+<section class="page-heading compact-heading">
+    <div>
+        <a class="back-link" href="{% url 'web:supplier-list' %}">← กลับไปหน้าผู้ขาย</a>
+        <p class="eyebrow">Supplier</p>
+        <h1>{% if mode == 'create' %}เพิ่มผู้ขาย{% else %}แก้ไข {{ supplier.name }}{% endif %}</h1>
+        <p>เครดิตเทอมใช้คำนวณวันครบกำหนดจ่าย = วันที่จัดส่ง + เครดิตเทอม</p>
+    </div>
+</section>
+
+<form class="editor-layout" method="post" novalidate>
+    {% csrf_token %}
+    <section class="editor-card">
+        {% if form.non_field_errors %}<div class="form-alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+        <div class="form-grid">
+            {% for field in form %}
+                {% if field.name != "is_active" %}
+                    <div class="field-group{% if field.name == 'address' %} field-span-2{% endif %}{% if field.errors %} field-group-error{% endif %}">
+                        {{ field.label_tag }}{{ field }}
+                        {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}
+                        {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% if mode == 'edit' and supplier.credit_group %}
+            <p class="field-help">กลุ่มเจ้าหนี้จากไฟล์นำเข้า: {{ supplier.credit_group }}</p>
+        {% endif %}
+        {% if mode == 'edit' %}
+            <label class="toggle-row" for="{{ form.is_active.id_for_label }}">
+                {{ form.is_active }}
+                <span><strong>{{ form.is_active.label }}</strong><small>เมื่อปิด จะเลือกผู้ขายรายนี้ในใบสั่งซื้อใหม่ไม่ได้ แต่ใบเดิมยังอยู่ครบ</small></span>
+            </label>
+        {% else %}
+            <input type="hidden" name="{{ form.is_active.html_name }}" value="on">
+        {% endif %}
+        <div class="form-actions">
+            <a class="button button-secondary" href="{% url 'web:supplier-list' %}">ยกเลิก</a>
+            <button class="button button-primary" type="submit">{% if mode == 'create' %}เพิ่มผู้ขาย{% else %}บันทึกการเปลี่ยนแปลง{% endif %}</button>
+        </div>
+    </section>
+</form>
+{% endblock %}

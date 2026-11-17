@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" role="img" aria-labelledby="title description">
+  <title id="title">Cash Flow overview</title>
+  <desc id="description">An abstract dashboard with a rising chart and financial summary cards.</desc>
+  <defs>
+    <linearGradient id="panel" x1="82" y1="40" x2="640" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F4FBF7"/>
+      <stop offset="1" stop-color="#D9EEE3"/>
+    </linearGradient>
+    <linearGradient id="chart" x1="150" y1="342" x2="562" y2="176" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#62C798"/>
+      <stop offset="1" stop-color="#167657"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#062E23" flood-opacity=".16"/>
+    </filter>
+  </defs>
+
+  <circle cx="93" cy="112" r="54" fill="#80D2AB" fill-opacity=".16"/>
+  <circle cx="638" cy="418" r="68" fill="#E7C97C" fill-opacity=".14"/>
+
+  <rect x="78" y="55" width="564" height="410" rx="34" fill="url(#panel)" filter="url(#shadow)"/>
+  <rect x="111" y="88" width="498" height="344" rx="22" fill="#FFFFFF" fill-opacity=".82"/>
+
+  <circle cx="143" cy="120" r="7" fill="#58B68A"/>
+  <rect x="162" y="113" width="76" height="14" rx="7" fill="#194E3E" fill-opacity=".18"/>
+  <rect x="510" y="108" width="65" height="24" rx="12" fill="#DDF0E7"/>
+  <circle cx="527" cy="120" r="4" fill="#30946D"/>
+  <rect x="537" y="116" width="23" height="8" rx="4" fill="#30946D" fill-opacity=".38"/>
+
+  <rect x="136" y="160" width="116" height="73" rx="15" fill="#E8F5EE"/>
+  <rect x="153" y="178" width="45" height="9" rx="4.5" fill="#245D49" fill-opacity=".26"/>
+  <rect x="153" y="199" width="68" height="16" rx="8" fill="#245D49"/>
+  <circle cx="229" cy="184" r="8" fill="#5AC494"/>
+
+  <rect x="268" y="160" width="116" height="73" rx="15" fill="#F7F1DF"/>
+  <rect x="285" y="178" width="45" height="9" rx="4.5" fill="#725D25" fill-opacity=".24"/>
+  <rect x="285" y="199" width="62" height="16" rx="8" fill="#725D25"/>
+  <circle cx="361" cy="184" r="8" fill="#D5B258"/>
+
+  <rect x="400" y="160" width="176" height="73" rx="15" fill="#EDF3F0"/>
+  <rect x="418" y="178" width="54" height="9" rx="4.5" fill="#245D49" fill-opacity=".22"/>
+  <rect x="418" y="199" width="78" height="16" rx="8" fill="#245D49"/>
+  <rect x="522" y="187" width="36" height="12" rx="6" fill="#76CBA4"/>
+
+  <line x1="139" y1="374" x2="576" y2="374" stroke="#1F5B47" stroke-opacity=".1" stroke-width="2"/>
+  <line x1="139" y1="328" x2="576" y2="328" stroke="#1F5B47" stroke-opacity=".08" stroke-width="2"/>
+  <line x1="139" y1="282" x2="576" y2="282" stroke="#1F5B47" stroke-opacity=".08" stroke-width="2"/>
+
+  <path d="M151 355C190 350 207 323 246 329C287 336 308 307 347 311C390 316 411 261 455 277C495 291 514 230 565 249" fill="none" stroke="url(#chart)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="151" cy="355" r="7" fill="#FFFFFF" stroke="#62C798" stroke-width="5"/>
+  <circle cx="246" cy="329" r="7" fill="#FFFFFF" stroke="#4DB889" stroke-width="5"/>
+  <circle cx="347" cy="311" r="7" fill="#FFFFFF" stroke="#36A476" stroke-width="5"/>
+  <circle cx="455" cy="277" r="7" fill="#FFFFFF" stroke="#248B64" stroke-width="5"/>
+  <circle cx="565" cy="249" r="9" fill="#167657" stroke="#FFFFFF" stroke-width="5"/>
+
+  <rect x="139" y="393" width="61" height="8" rx="4" fill="#1F5B47" fill-opacity=".12"/>
+  <rect x="222" y="393" width="61" height="8" rx="4" fill="#1F5B47" fill-opacity=".12"/>
+  <rect x="305" y="393" width="61" height="8" rx="4" fill="#1F5B47" fill-opacity=".12"/>
+  <rect x="388" y="393" width="61" height="8" rx="4" fill="#1F5B47" fill-opacity=".12"/>
+  <rect x="471" y="393" width="61" height="8" rx="4" fill="#1F5B47" fill-opacity=".12"/>
+
+  <g filter="url(#shadow)">
+    <circle cx="600" cy="340" r="54" fill="#164F3D"/>
+    <path d="M578 345L594 360L624 323" fill="none" stroke="#A3E0C2" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

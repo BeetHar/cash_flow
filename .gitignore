@@ -1,0 +1,25 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+staticfiles/
+.idea/
+.vscode/
+
+
+# ไฟล์ข้อมูลจริงของบริษัท ห้ามขึ้น git (ไฟล์ทดสอบสร้างในโค้ดเทสต์แทน)
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+
+# ไฟล์ที่ระบบปฏิบัติการสร้างเอง
+.DS_Store
+Thumbs.db
+desktop.ini

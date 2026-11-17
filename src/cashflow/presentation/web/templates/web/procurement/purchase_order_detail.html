@@ -1,0 +1,107 @@
+{% extends "web/base.html" %}
+{% load web_format %}
+
+{% block title %}{{ purchase_order.number }} · Cash Flow{% endblock %}
+
+{% block content %}
+<section class="page-heading compact-heading po-heading">
+    <div>
+        <a class="back-link" href="{% url 'web:purchase-order-list' %}">← กลับไปหน้าใบสั่งซื้อ</a>
+        <p class="eyebrow">Purchase order</p>
+        <h1>{{ purchase_order.number }}</h1>
+        <p>{% if purchase_order.supplier.code %}{{ purchase_order.supplier.code }} {% endif %}{{ purchase_order.supplier.name }}</p>
+    </div>
+    <div class="chip-row">
+        <span class="status-chip status-chip-large status-{{ purchase_order.status }}">{{ purchase_order.get_status_display }}</span>
+        <span class="status-chip status-chip-large approval-{{ purchase_order.approval_status }}">{{ purchase_order.get_approval_status_display }}</span>
+    </div>
+</section>
+
+{% if progress %}
+    <ol class="po-progress po-progress-3" aria-label="ขั้นตอนของใบสั่งซื้อ">
+        {% for step in progress %}
+            <li class="step-{{ step.state }}"{% if step.state == 'current' %} aria-current="step"{% endif %}>
+                <span class="step-marker" aria-hidden="true">{% if step.state == 'done' %}✓{% else %}{{ forloop.counter }}{% endif %}</span>
+                <span>{{ step.label }}</span>
+            </li>
+        {% endfor %}
+    </ol>
+{% else %}
+    <div class="cancel-notice" role="status">
+        <strong>ใบสั่งซื้อนี้ถูกยกเลิกแล้ว</strong>
+        <p>เหตุผล: {{ purchase_order.cancel_reason }}</p>
+    </div>
+{% endif %}
+
+{% if can_edit %}
+    <div class="po-actions">
+        <a class="button button-primary" href="{% url 'web:purchase-order-edit' purchase_order.pk %}">แก้ไข</a>
+        <details class="cancel-box"{% if cancel_open %} open{% endif %}>
+            <summary class="button button-quiet button-danger">ยกเลิกใบสั่งซื้อ</summary>
+            <form method="post" action="{% url 'web:purchase-order-cancel' purchase_order.pk %}">
+                {% csrf_token %}
+                <div class="field-group{% if cancel_form.reason.errors %} field-group-error{% endif %}">
+                    {{ cancel_form.reason.label_tag }}{{ cancel_form.reason }}
+                    {% for error in cancel_form.reason.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <p class="field-help">ใบที่ยกเลิกแล้วยังเก็บไว้ดูย้อนหลังได้ แต่จะไม่นับในเงินที่ต้องจ่าย และแก้ไขต่อไม่ได้</p>
+                <button class="button button-danger-solid" type="submit">ยืนยันยกเลิก</button>
+            </form>
+        </details>
+    </div>
+{% endif %}
+
+<div class="po-layout">
+    <div class="po-main">
+        <section class="data-panel">
+            <dl class="po-facts">
+                <div><dt>ผู้ขาย</dt><dd>{{ purchase_order.supplier.name }}<small>{% if purchase_order.supplier.code %}รหัส {{ purchase_order.supplier.code }} · {% endif %}เครดิต {% if purchase_order.supplier.credit_days is None %}ไม่ระบุ{% else %}{{ purchase_order.supplier.credit_days }} วัน{% endif %}</small></dd></div>
+                <div><dt>วันเวลาทำรายการ</dt><dd>{{ purchase_order.ordered_at|thai_datetime }}</dd></div>
+                <div><dt>วันที่จัดส่ง</dt><dd>{{ purchase_order.delivery_date|thai_date }}</dd></div>
+                <div><dt>ผู้บันทึก</dt><dd>{{ purchase_order.created_by.get_display_name }}<small>{{ purchase_order.created_at|thai_datetime }}</small></dd></div>
+                <div><dt>แก้ไขล่าสุด</dt><dd>{{ purchase_order.updated_at|thai_datetime }}</dd></div>
+                {% if purchase_order.note %}<div class="fact-wide"><dt>หมายเหตุ</dt><dd>{{ purchase_order.note|linebreaksbr }}</dd></div>{% endif %}
+            </dl>
+        </section>
+
+        <section class="data-panel" aria-labelledby="history-title">
+            <div class="panel-heading">
+                <div>
+                    <h2 id="history-title">ประวัติ</h2>
+                    <p>บันทึกอัตโนมัติทุกครั้งที่มีการเปลี่ยนแปลง ไม่มีใครแก้หรือลบได้</p>
+                </div>
+            </div>
+            <ol class="timeline">
+                {% for entry in history %}
+                    <li class="timeline-{{ entry.action }}">
+                        <strong>{{ entry.label }}</strong>
+                        <span>{{ entry.actor }} · {{ entry.occurred_at|thai_datetime }}</span>
+                        {% if entry.changes %}
+                            <ul class="change-list">
+                                {% for change in entry.changes %}
+                                    <li><span class="change-field">{{ change.label }}</span> <del>{{ change.before }}</del> <span aria-hidden="true">→</span><span class="visually-hidden">เป็น</span> <ins>{{ change.after }}</ins></li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% if entry.reason %}<small>เหตุผล: {{ entry.reason }}</small>{% endif %}
+                    </li>
+                {% empty %}
+                    <li><span>ยังไม่มีประวัติ</span></li>
+                {% endfor %}
+            </ol>
+        </section>
+    </div>
+
+    <aside class="po-totals" aria-label="ยอดที่ต้องจ่าย">
+        <div class="totals-net">
+            <span>ยอดรวม (รวม VAT)</span>
+            <strong>฿{{ purchase_order.total_amount|money }}</strong>
+            <small>ยังไม่หัก ณ ที่จ่าย</small>
+        </div>
+        <dl>
+            <div><dt>ครบกำหนดจ่าย<small>{% if not due_is_default %}กำหนดเอง{% elif purchase_order.supplier.credit_days is None %}ผู้ขายยังไม่ระบุเครดิต นับเป็นวันที่จัดส่ง{% else %}วันที่จัดส่ง + เครดิต {{ purchase_order.supplier.credit_days }} วัน{% endif %}</small></dt><dd>{{ purchase_order.due_date|thai_date }}</dd></div>
+            <div class="totals-strong"><dt>นับในเงินที่ต้องจ่าย<small>{{ outflow_note }}</small></dt><dd>{{ outflow_state }}</dd></div>
+        </dl>
+    </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+# รันเทสต์ทุกครั้งที่เปิดหรืออัปเดต Pull Request และทุกครั้งที่ merge เข้า main
+# ถ้าไม่ผ่าน GitHub จะขึ้นกากบาทสีแดงใน PR
+
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: cash_flow
+          POSTGRES_USER: cash_flow
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cash_flow -d cash_flow"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # ค่าสำหรับ CI เท่านั้น ไม่ใช่ค่าจริงของบริษัท
+      APP_ENV: test
+      DJANGO_DEBUG: "false"
+      DJANGO_SECRET_KEY: ci-only-secret-not-for-production
+      POSTGRES_DB: cash_flow
+      POSTGRES_USER: cash_flow
+      POSTGRES_PASSWORD: ci-only-password
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: requirements/base.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements/base.txt
+
+      - name: Check that every model change has a migration
+        working-directory: src
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run tests
+        working-directory: src
+        run: python manage.py test

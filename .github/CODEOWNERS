@@ -1,0 +1,51 @@
+# ใครดูแลส่วนไหนของโปรเจกต์
+# เมื่อเปิด Pull Request ที่แก้ไฟล์ในส่วนนั้น GitHub จะขอให้เจ้าของรีวิวให้อัตโนมัติ
+# บรรทัดที่อยู่ล่างกว่าชนะบรรทัดบน
+#
+# ⚠️ ก่อนใช้งาน: เปลี่ยน @beet และ @double เป็นชื่อบัญชี GitHub จริงของแต่ละคน
+
+# ค่าตั้งต้น: ไฟล์ที่ไม่ได้ระบุ ทั้งสองคนรีวิวได้
+*                                                       @beet @double
+
+# ---------------------------------------------------------------- double
+# โครงระบบ, Docker, ล็อกอิน, ผู้ใช้/บทบาท และ audit trail
+/Dockerfile                                             @double
+/compose.yaml                                           @double
+/docker/                                                @double
+/requirements/                                          @double
+/*.ps1                                                  @double
+/src/manage.py                                          @double
+/src/cashflow/config/                                   @double
+/src/cashflow/modules/identity/                         @double
+/src/cashflow/modules/audit/                            @double
+/src/cashflow/presentation/web/access.py                @double
+/src/cashflow/presentation/web/forms.py                 @double
+/src/cashflow/presentation/web/views.py                 @double
+/src/cashflow/presentation/web/management_views.py      @double
+/src/cashflow/presentation/web/context_processors.py    @double
+/src/cashflow/presentation/web/templates/web/identity/  @double
+/src/cashflow/presentation/web/templates/web/auth/      @double
+/src/cashflow/presentation/web/tests/                   @double
+
+# ---------------------------------------------------------------- beet
+# ใบสั่งซื้อ (PO), ผู้ขาย, การนำเข้า Excel และหน้าเว็บของส่วนนี้
+/src/cashflow/modules/procurement/                                      @beet
+/src/cashflow/presentation/web/procurement_views.py                     @beet
+/src/cashflow/presentation/web/procurement_forms.py                     @beet
+/src/cashflow/presentation/web/templates/web/procurement/               @beet
+/src/cashflow/presentation/web/templatetags/                            @beet
+/src/cashflow/presentation/web/tests/test_procurement_views.py          @beet
+/src/cashflow/presentation/web/tests/test_supplier_import_views.py      @beet
+
+# ---------------------------------------------------------------- ไฟล์กลาง
+# ทุกโมดูลมาเจอกันที่ไฟล์เหล่านี้ ต้องให้ทั้งสองคนรีวิว
+/src/cashflow/config/settings.py                        @beet @double
+/src/cashflow/presentation/web/urls.py                  @beet @double
+/src/cashflow/presentation/web/templates/web/base.html  @beet @double
+/src/cashflow/presentation/web/templates/web/dashboard.html @beet @double
+/src/cashflow/presentation/web/static/                  @beet @double
+/docs/                                                  @beet @double
+/AGENTS.md                                              @beet @double
+/README.md                                              @beet @double
+/CONTRIBUTING.md                                        @beet @double
+/.github/                                               @beet @double

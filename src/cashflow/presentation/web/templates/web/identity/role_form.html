@@ -1,0 +1,20 @@
+{% extends "web/base.html" %}
+
+{% block title %}{% if mode == 'create' %}สร้างบทบาท{% else %}แก้ไขบทบาท{% endif %} · Cash Flow{% endblock %}
+
+{% block content %}
+<section class="page-heading compact-heading">
+    <div><a class="back-link" href="{% url 'web:role-list' %}">← กลับไปหน้าบทบาท</a><p class="eyebrow">Role permissions</p><h1>{% if mode == 'create' %}สร้างบทบาทใหม่{% else %}แก้ไข {{ role.name }}{% endif %}</h1><p>เลือกสิ่งที่สมาชิกของบทบาทนี้สามารถทำได้ สิทธิ์ใหม่จากโมดูลในอนาคตจะมาต่อที่นี่</p></div>
+</section>
+<form class="editor-layout" method="post" novalidate>
+    {% csrf_token %}
+    <section class="editor-card">
+        {% if form.non_field_errors %}<div class="form-alert" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="field-group">{{ form.name.label_tag }}{{ form.name }}{% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+        <div class="form-divider"></div>
+        <fieldset class="choice-section"><legend>{{ form.permissions.label }}</legend><p>สิทธิ์เหล่านี้เป็นสิทธิ์ระดับแอป ไม่รวมเครื่องมือภายในของนักพัฒนา</p><div class="choice-grid permission-grid">{{ form.permissions }}</div>{% for error in form.permissions.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</fieldset>
+        <div class="form-actions"><a class="button button-secondary" href="{% url 'web:role-list' %}">ยกเลิก</a><button class="button button-primary" type="submit">{% if mode == 'create' %}สร้างบทบาท{% else %}บันทึกการเปลี่ยนแปลง{% endif %}</button></div>
+    </section>
+</form>
+{% endblock %}
+

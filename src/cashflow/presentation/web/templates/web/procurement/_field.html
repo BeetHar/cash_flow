@@ -1,0 +1,5 @@
+<div class="field-group{% if span == 2 %} field-span-2{% elif span == 3 %} field-span-3{% endif %}{% if field.errors %} field-group-error{% endif %}">
+    {{ field.label_tag }}{{ field }}
+    {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}
+    {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+</div>

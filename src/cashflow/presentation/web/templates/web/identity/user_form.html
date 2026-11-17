@@ -1,0 +1,51 @@
+{% extends "web/base.html" %}
+
+{% block title %}{% if mode == 'create' %}สร้างผู้ใช้{% else %}แก้ไขผู้ใช้{% endif %} · Cash Flow{% endblock %}
+
+{% block content %}
+<section class="page-heading compact-heading">
+    <div>
+        <a class="back-link" href="{% url 'web:user-list' %}">← กลับไปหน้าผู้ใช้</a>
+        <p class="eyebrow">User account</p>
+        <h1>{% if mode == 'create' %}สร้างผู้ใช้ใหม่{% else %}แก้ไข {{ managed_user.username }}{% endif %}</h1>
+        <p>{% if mode == 'create' %}สร้างรหัสเข้าใช้งานและกำหนดบทบาทเริ่มต้น{% else %}ปรับข้อมูล สถานะ และบทบาทของบัญชี{% endif %}</p>
+    </div>
+</section>
+
+<form class="editor-layout" method="post" novalidate>
+    {% csrf_token %}
+    <section class="editor-card">
+        {% if form.non_field_errors %}<div class="form-alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+        <div class="form-grid">
+            {% if mode == 'create' %}
+                <div class="field-group">{{ form.username.label_tag }}{{ form.username }}{% for error in form.username.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+            {% else %}
+                <div class="read-only-field"><span>ชื่อผู้ใช้</span><strong>{{ managed_user.username }}</strong></div>
+            {% endif %}
+            <div class="field-group">{{ form.display_name.label_tag }}{{ form.display_name }}{% for error in form.display_name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+            <div class="field-group field-span-2">{{ form.email.label_tag }}{{ form.email }}{% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+            {% if mode == 'create' %}
+                <div class="field-group">{{ form.password.label_tag }}{{ form.password }}{% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+                <div class="field-group">{{ form.password_confirmation.label_tag }}{{ form.password_confirmation }}{% for error in form.password_confirmation.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+            {% endif %}
+        </div>
+        <div class="form-divider"></div>
+        <fieldset class="choice-section">
+            <legend>{{ form.roles.label }}</legend>
+            <p>หนึ่งบัญชีมีได้หลายบทบาท และได้รับสิทธิ์รวมจากทุกบทบาท</p>
+            <div class="choice-grid">{{ form.roles }}</div>
+            {% if form.roles.help_text %}<p class="field-help">{{ form.roles.help_text }}</p>{% endif %}
+            {% for error in form.roles.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </fieldset>
+        <label class="toggle-row" for="{{ form.is_active.id_for_label }}">
+            {{ form.is_active }}
+            <span><strong>{{ form.is_active.label }}</strong><small>เมื่อปิด ผู้ใช้นี้จะเข้าสู่ระบบไม่ได้</small></span>
+        </label>
+        <div class="form-actions">
+            <a class="button button-secondary" href="{% url 'web:user-list' %}">ยกเลิก</a>
+            <button class="button button-primary" type="submit">{% if mode == 'create' %}สร้างผู้ใช้{% else %}บันทึกการเปลี่ยนแปลง{% endif %}</button>
+        </div>
+    </section>
+</form>
+{% endblock %}
+

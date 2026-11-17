@@ -1,0 +1,61 @@
+{% load static %}
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>{% block title %}Cash Flow{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'web/css/app.css' %}">
+</head>
+<body class="{% block body_class %}app-body{% endblock %}">
+    <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+
+    {% if request.user.is_authenticated %}
+        <header class="topbar">
+            <a class="brand" href="{% url 'web:dashboard' %}" aria-label="Cash Flow หน้าหลัก">
+                <span class="brand-mark" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </span>
+                <span>
+                    <strong>Cash Flow</strong>
+                    <small>Financial workspace</small>
+                </span>
+            </a>
+
+            <nav class="primary-nav" aria-label="เมนูหลัก">
+                <a href="{% url 'web:dashboard' %}">กระแสเงินสด</a>
+                {% if can_view_purchase_orders %}<a href="{% url 'web:purchase-order-list' %}">ใบสั่งซื้อ</a>{% endif %}
+                {% if can_view_purchase_orders %}<a href="{% url 'web:supplier-list' %}">ผู้ขาย</a>{% endif %}
+                {% if can_manage_users %}<a href="{% url 'web:user-list' %}">ผู้ใช้</a>{% endif %}
+                {% if can_manage_roles %}<a href="{% url 'web:role-list' %}">บทบาท</a>{% endif %}
+                {% if is_system_developer %}<a href="{% url 'admin:index' %}">Developer console</a>{% endif %}
+            </nav>
+
+            <div class="account-menu">
+                <div class="account-copy">
+                    <strong>{{ request.user.get_display_name }}</strong>
+                    <span>{{ request.user.username }}</span>
+                </div>
+                <span class="avatar" aria-hidden="true">{{ request.user.username|first|upper }}</span>
+                <form method="post" action="{% url 'web:logout' %}">
+                    {% csrf_token %}
+                    <button class="button button-quiet" type="submit">ออกจากระบบ</button>
+                </form>
+            </div>
+        </header>
+    {% endif %}
+
+    <main id="main-content" class="{% block main_class %}page-shell{% endblock %}">
+        {% if messages %}
+            <div class="message-stack" aria-live="polite">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
+

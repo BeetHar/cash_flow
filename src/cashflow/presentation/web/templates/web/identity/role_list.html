@@ -1,0 +1,24 @@
+{% extends "web/base.html" %}
+
+{% block title %}จัดการบทบาท · Cash Flow{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div><p class="eyebrow">Role management</p><h1>บทบาทและสิทธิ์</h1><p>สร้างบทบาทไว้ประกอบสิทธิ์ แล้วนำไปกำหนดให้ผู้ใช้งาน</p></div>
+    <a class="button button-primary" href="{% url 'web:role-create' %}"><span aria-hidden="true">＋</span> สร้างบทบาท</a>
+</section>
+<section class="role-grid" aria-label="รายการบทบาท">
+    {% for row in role_rows %}
+        <article class="role-card">
+            <div class="role-card-heading"><span class="role-icon" aria-hidden="true">◇</span>{% if row.is_protected %}<span class="status-chip status-chip-ready">บทบาทหลัก</span>{% endif %}</div>
+            <h2>{{ row.role.name }}</h2>
+            <p>{{ row.user_count }} ผู้ใช้ · {{ row.role.permissions.count }} สิทธิ์</p>
+            <div class="permission-preview">{% for permission in row.role.permissions.all|slice:":3" %}<span>{{ permission.name }}</span>{% empty %}<span class="muted-text">ยังไม่ได้กำหนดสิทธิ์</span>{% endfor %}</div>
+            {% if not row.is_protected or is_system_developer %}<a class="button button-secondary button-wide" href="{% url 'web:role-edit' row.role.pk %}">แก้ไขบทบาท</a>{% else %}<p class="protected-note">บทบาทนี้แก้ได้จาก Developer console</p>{% endif %}
+        </article>
+    {% empty %}
+        <div class="empty-panel">ยังไม่มีบทบาทในระบบ</div>
+    {% endfor %}
+</section>
+{% endblock %}
+
