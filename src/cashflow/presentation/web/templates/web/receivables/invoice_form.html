@@ -1,0 +1,33 @@
+{% extends "web/base.html" %}
+{% block title %}{% if invoice %}แก้ไข {{ invoice.number }}{% else %}บันทึกใบขาย{% endif %} · Cash Flow{% endblock %}
+{% block content %}
+<section class="page-heading compact-heading"><div>
+    <a class="back-link" href="{% if invoice %}{% url 'web:sales-invoice-detail' invoice.pk %}{% else %}{% url 'web:sales-invoice-list' %}{% endif %}">← กลับ</a>
+    <p class="eyebrow">Sales invoice</p><h1>{% if invoice %}แก้ไข {{ invoice.number }}{% else %}บันทึกใบขาย{% endif %}</h1>
+</div></section>
+{% if not has_customers %}
+    <section class="empty-panel editor-layout"><p>ต้องมีลูกค้าอย่างน้อย 1 รายก่อน</p><a class="button button-primary" href="{% url 'web:customer-create' %}">เพิ่มลูกค้า</a></section>
+{% else %}
+<form class="editor-layout editor-layout-wide" method="post" novalidate>{% csrf_token %}
+    <section class="editor-card">
+        {% if form.non_field_errors %}<div class="form-alert" role="alert">{% for e in form.non_field_errors %}<p>{{ e }}</p>{% endfor %}</div>{% endif %}
+        <div class="form-grid form-grid-3">
+            {% include "web/procurement/_field.html" with field=form.number %}
+            {% include "web/procurement/_field.html" with field=form.customer span=2 %}
+            {% include "web/procurement/_field.html" with field=form.amount %}
+            {% include "web/procurement/_field.html" with field=form.document_date %}
+            {% include "web/procurement/_field.html" with field=form.due_date %}
+            {% include "web/procurement/_field.html" with field=form.reference %}
+            {% include "web/procurement/_field.html" with field=form.branch %}
+            <div></div>
+            {% include "web/procurement/_field.html" with field=form.note span=3 %}
+            {% if form.reason %}{% include "web/procurement/_field.html" with field=form.reason span=3 %}{% endif %}
+        </div>
+        <div class="form-actions">
+            {% if not invoice %}<button class="button button-secondary" type="submit" name="save_and_new" value="1">บันทึกแล้วกรอกใบต่อไป</button>{% endif %}
+            <button class="button button-primary" type="submit">บันทึก</button>
+        </div>
+    </section>
+</form>
+{% endif %}
+{% endblock %}

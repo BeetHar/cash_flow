@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import management_views, procurement_views, views
+from . import management_views, procurement_views, receivables_views, views
 
 
 app_name = "web"
@@ -83,4 +83,19 @@ urlpatterns = [
         procurement_views.supplier_edit_view,
         name="supplier-edit",
     ),
+    path("daily/", receivables_views.daily_view, name="daily"),
+    path("customers/", receivables_views.customer_list_view, name="customer-list"),
+    path("customers/new/", receivables_views.customer_form_view, name="customer-create"),
+    path("customers/<uuid:customer_id>/edit/", receivables_views.customer_form_view, name="customer-edit"),
+    path("sales-invoices/", receivables_views.invoice_list_view, name="sales-invoice-list"),
+    path("sales-invoices/new/", receivables_views.invoice_form_view, name="sales-invoice-create"),
+    path("sales-invoices/import/", receivables_views.invoice_import_view, name="sales-invoice-import"),
+    path("sales-invoices/import/confirm/", receivables_views.invoice_import_confirm_view, name="sales-invoice-import-confirm"),
+    path("sales-invoices/<uuid:invoice_id>/", receivables_views.invoice_detail_view, name="sales-invoice-detail"),
+    path("sales-invoices/<uuid:invoice_id>/edit/", receivables_views.invoice_form_view, name="sales-invoice-edit"),
+    path("sales-invoices/<uuid:invoice_id>/<str:action>/", receivables_views.invoice_action_view, name="sales-invoice-action"),
+    path("receipt-plans/", receivables_views.plan_list_view, name="receipt-plan-list"),
+    path("receipt-plans/new/", receivables_views.plan_form_view, name="receipt-plan-create"),
+    path("receipt-plans/<uuid:plan_id>/", receivables_views.plan_detail_view, name="receipt-plan-detail"),
+    path("receipt-plans/<uuid:plan_id>/edit/", receivables_views.plan_form_view, name="receipt-plan-edit"),
 ]

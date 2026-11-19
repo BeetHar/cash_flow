@@ -1,0 +1,69 @@
+{% extends "web/base.html" %}
+{% load web_format %}
+{% block title %}รายการรายวัน · Cash Flow{% endblock %}
+{% block content %}
+<section class="page-heading">
+    <div><p class="eyebrow">Daily cash</p><h1>รายการรายวัน</h1><p>เงินเข้าและเงินออกของแต่ละวัน จากใบขาย แผนรับเงิน และใบสั่งซื้อ</p></div>
+    <nav class="view-toggle" aria-label="มุมมอง">
+        <a href="?start={{ start|date:'Y-m-d' }}&amp;end={{ end|date:'Y-m-d' }}&amp;opening={{ opening }}&amp;mode=summary" {% if mode == "summary" %}aria-current="page"{% endif %}>สรุปรายวัน</a>
+        <a href="?start={{ start|date:'Y-m-d' }}&amp;end={{ end|date:'Y-m-d' }}&amp;opening={{ opening }}&amp;mode=list" {% if mode == "list" %}aria-current="page"{% endif %}>รายการต่อเนื่อง</a>
+    </nav>
+</section>
+
+<form class="daily-filter" method="get">
+    <input type="hidden" name="mode" value="{{ mode }}">
+    <label>ตั้งแต่<input type="date" name="start" value="{{ start|date:'Y-m-d' }}"></label>
+    <label>ถึง<input type="date" name="end" value="{{ end|date:'Y-m-d' }}"></label>
+    <label>ยอดยกมา<input type="number" step="any" name="opening" value="{{ opening }}" inputmode="decimal"></label>
+    <button class="button button-secondary" type="submit">ดู</button>
+    <p class="field-help">ยอดยกมาให้กรอกเองไปก่อน จนกว่าจะเชื่อมยอดธนาคาร</p>
+</form>
+
+{% if overdue_in_count or overdue_out_count %}
+<div class="form-alert import-warnings daily-overdue" role="status">
+    <strong>มีรายการเลยกำหนดก่อนวันที่ {{ start|thai_date }} ที่ยังไม่ปิด และไม่ได้นับในตารางด้านล่าง</strong>
+    {% if overdue_in_count %}<p>ใบขายยังไม่ได้รับเงิน {{ overdue_in_count }} ใบ รวม {{ overdue_in_total|money }} บาท · <a class="text-link" href="{% url 'web:sales-invoice-list' %}?status=open">ดูใบขายที่รอรับเงิน</a></p>{% endif %}
+    {% if overdue_out_count %}<p>ใบสั่งซื้อเลยกำหนดจ่าย {{ overdue_out_count }} ใบ รวม {{ overdue_out_total|money }} บาท · <a class="text-link" href="{% url 'web:purchase-order-list' %}">ดูใบสั่งซื้อ</a></p>{% endif %}
+</div>
+{% endif %}
+
+<section class="import-summary daily-totals" aria-label="ยอดรวมช่วงนี้">
+    <div><span>ยอดยกมา</span><strong>{{ opening|money }}</strong></div>
+    <div class="summary-create"><span>เงินเข้า</span><strong>{{ total_in|money }}</strong></div>
+    <div class="summary-out"><span>เงินออก</span><strong>{{ total_out|money }}</strong></div>
+    <div class="summary-update"><span>คงเหลือปลายช่วง</span><strong>{{ closing|money }}</strong></div>
+</section>
+
+<section class="data-panel">
+<div class="table-scroll">
+{% if mode == "summary" %}
+    <table class="data-table">
+        <thead><tr><th scope="col">วันที่</th><th class="num" scope="col">เงินเข้า</th><th class="num" scope="col">เงินออก</th><th class="num" scope="col">สุทธิ</th><th class="num" scope="col">คงเหลือ</th></tr></thead>
+        <tbody>{% for d in days %}
+            <tr class="{% if d.day == today %}row-today{% endif %}">
+                <td><a class="doc-link" href="?start={{ d.day|date:'Y-m-d' }}&amp;end={{ d.day|date:'Y-m-d' }}&amp;opening={{ d.opening }}&amp;mode=list">{{ d.day|thai_date }}</a>{% if d.day == today %} <small class="muted-text">วันนี้</small>{% endif %}</td>
+                <td class="num amount-in">{% if d.in %}+{{ d.in|money }}{% else %}—{% endif %}</td>
+                <td class="num amount-out">{% if d.out %}-{{ d.out|money }}{% else %}—{% endif %}</td>
+                <td class="num">{{ d.net|money }}</td>
+                <td class="num"><strong class="{% if d.closing < 0 %}amount-out{% endif %}">{{ d.closing|money }}</strong></td>
+            </tr>
+        {% empty %}<tr><td colspan="5" class="empty-cell">ไม่มีรายการในช่วงนี้</td></tr>{% endfor %}</tbody>
+    </table>
+{% else %}
+    <table class="data-table">
+        <thead><tr><th scope="col">ประเภท</th><th scope="col">รายการ</th><th class="num" scope="col">เงินเข้า</th><th class="num" scope="col">เงินออก</th><th class="num" scope="col">คงเหลือ</th></tr></thead>
+        {% for d in days %}<tbody>
+            <tr class="day-row{% if d.day == today %} row-today{% endif %}"><th colspan="4" scope="rowgroup">{{ d.day|thai_date }}{% if d.day == today %} · วันนี้{% endif %}</th><td class="num muted-text">ยกมา {{ d.opening|money }}</td></tr>
+            {% for r in d.rows %}<tr>
+                <td><span class="status-chip kind-{{ r.direction }}-{{ r.kind }}">{% if r.direction == "out" %}จ่ายตาม PO{% elif r.kind == "actual" %}รับจริง{% elif r.kind == "plan" %}ประมาณการ{% else %}คาดว่าจะได้รับ{% endif %}</span></td>
+                <td><a class="doc-link" href="{% url r.url_name r.object_id %}">{{ r.title }}</a> {{ r.detail }}</td>
+                <td class="num amount-in">{% if r.direction == "in" %}+{{ r.amount|money }}{% endif %}</td>
+                <td class="num amount-out">{% if r.direction == "out" %}-{{ r.amount|money }}{% endif %}</td>
+                <td class="num">{{ r.balance|money }}</td>
+            </tr>{% endfor %}
+        </tbody>{% empty %}<tbody><tr><td colspan="5" class="empty-cell">ไม่มีรายการในช่วงนี้</td></tr></tbody>{% endfor %}
+    </table>
+{% endif %}
+</div>
+</section>
+{% endblock %}

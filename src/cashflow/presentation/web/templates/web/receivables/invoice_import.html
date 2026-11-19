@@ -1,0 +1,44 @@
+{% extends "web/base.html" %}
+{% load web_format %}
+{% block title %}นำเข้าใบขาย · Cash Flow{% endblock %}
+{% block content %}
+<section class="page-heading compact-heading"><div>
+    <a class="back-link" href="{% url 'web:sales-invoice-list' %}">← กลับไปหน้าใบขาย</a>
+    <p class="eyebrow">Sales import</p><h1>นำเข้าใบขายจาก Excel</h1>
+    <p>รองรับไฟล์ที่มีคอลัมน์ หมายเลข Invoice, ยอดสุทธิ และวันที่ Invoice เช่น “รายการคำสั่งซื้อแม็คโคร ที่เสร็จสิ้นแล้ว”</p>
+</div></section>
+{% if not plan %}
+<form class="editor-layout" method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+    <section class="editor-card">
+        <div class="form-grid">{% include "web/procurement/_field.html" with field=form.customer %}{% include "web/procurement/_field.html" with field=form.file %}</div>
+        <ul class="import-rules">
+            <li>วันที่คาดว่าจะได้รับเงิน = วันที่ Invoice + เครดิตของลูกค้าที่เลือก</li>
+            <li>จับคู่ด้วยเลขที่ใบขาย ใบที่มีอยู่แล้วและยังรอรับเงินจะอัปเดต ใบที่รับเงินแล้วหรือยกเลิกแล้วจะไม่ถูกแก้</li>
+            <li>ไม่มีการลบ ทุกรายการที่เพิ่มหรือแก้จะบันทึกในประวัติพร้อมชื่อผู้นำเข้า</li>
+        </ul>
+        <div class="form-actions"><button class="button button-primary" type="submit">ตรวจไฟล์</button></div>
+    </section>
+</form>
+{% else %}
+<section class="import-summary" aria-label="สรุป">
+    <div><span>ทั้งหมด</span><strong>{{ plan|length }}</strong></div>
+    <div class="summary-create"><span>เพิ่มใหม่</span><strong>{{ counts.create }}</strong></div>
+    <div class="summary-update"><span>อัปเดต</span><strong>{{ counts.update }}</strong></div>
+    <div><span>ไม่เปลี่ยน</span><strong>{{ counts.unchanged }}</strong></div>
+    <div class="summary-warn"><span>ข้าม</span><strong>{{ counts.skip }}</strong></div>
+</section>
+{% if warnings %}<div class="form-alert import-warnings" role="status">{% for w in warnings %}<p>{{ w }}</p>{% endfor %}</div>{% endif %}
+<section class="data-panel import-panel"><div class="table-scroll"><table class="data-table">
+    <thead><tr><th scope="col">เลขที่</th><th scope="col">วันที่ Invoice</th><th scope="col">สาขา</th><th class="num" scope="col">ยอดสุทธิ</th><th scope="col">ผล</th></tr></thead>
+    <tbody>{% for item in plan %}<tr class="{% if item.action == 'skip' %}row-cancelled{% endif %}">
+        <td class="doc-link">{{ item.row.number }}</td><td>{{ item.row.document_date }}</td><td>{{ item.row.branch|default:"—" }}</td>
+        <td class="num">{{ item.row.amount|money }}</td>
+        <td>{% if item.action == "create" %}เพิ่มใหม่{% elif item.action == "update" %}อัปเดต: {{ item.changes|join:", " }}{% elif item.action == "skip" %}ข้าม: {{ item.note }}{% else %}ไม่เปลี่ยน{% endif %}</td>
+    </tr>{% endfor %}</tbody>
+</table></div></section>
+<form class="import-confirm" method="post" action="{% url 'web:sales-invoice-import-confirm' %}">{% csrf_token %}
+    <p>ตรวจแล้วกดยืนยัน ระบบจะบันทึกชื่อผู้นำเข้าและไฟล์ไว้ในประวัติ</p>
+    <div class="form-actions"><a class="button button-secondary" href="{% url 'web:sales-invoice-import' %}">เลือกไฟล์อื่น</a><button class="button button-primary" type="submit"{% if not counts.create and not counts.update %} disabled{% endif %}>ยืนยันนำเข้า</button></div>
+</form>
+{% endif %}
+{% endblock %}

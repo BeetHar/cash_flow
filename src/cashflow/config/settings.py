@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "cashflow.modules.identity.apps.IdentityConfig",
     "cashflow.modules.audit.apps.AuditConfig",
     "cashflow.modules.procurement.apps.ProcurementConfig",
+    "cashflow.modules.receivables.apps.ReceivablesConfig",
     "cashflow.presentation.web.apps.WebConfig",
 ]
 
@@ -69,6 +70,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "cashflow.presentation.web.context_processors.identity_capabilities",
                 "cashflow.presentation.web.context_processors.procurement_capabilities",
+                "cashflow.presentation.web.context_processors.receivables_capabilities",
             ],
         },
     },

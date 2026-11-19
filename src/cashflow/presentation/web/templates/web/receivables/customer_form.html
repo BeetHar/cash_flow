@@ -1,0 +1,21 @@
+{% extends "web/base.html" %}
+{% block title %}{% if customer %}แก้ไข {{ customer.name }}{% else %}เพิ่มลูกค้า{% endif %} · Cash Flow{% endblock %}
+{% block content %}
+<section class="page-heading compact-heading"><div>
+    <a class="back-link" href="{% url 'web:customer-list' %}">← กลับไปหน้าลูกค้า</a>
+    <p class="eyebrow">Customer</p><h1>{% if customer %}แก้ไข {{ customer.name }}{% else %}เพิ่มลูกค้า{% endif %}</h1>
+    <p>แก้เครดิตแล้ว ใบขายที่ยังรอรับเงินและไม่ได้กำหนดวันเอง จะเลื่อนวันที่คาดว่าจะได้รับตาม</p>
+</div></section>
+<form class="editor-layout" method="post" novalidate>{% csrf_token %}
+    <section class="editor-card">
+        {% if form.non_field_errors %}<div class="form-alert" role="alert">{% for e in form.non_field_errors %}<p>{{ e }}</p>{% endfor %}</div>{% endif %}
+        <div class="form-grid">
+            {% include "web/procurement/_field.html" with field=form.code %}
+            {% include "web/procurement/_field.html" with field=form.name %}
+            {% include "web/procurement/_field.html" with field=form.credit_days %}
+        </div>
+        {% if customer %}<label class="toggle-row" for="{{ form.is_active.id_for_label }}">{{ form.is_active }}<span><strong>ใช้งานอยู่</strong><small>เมื่อปิด จะเลือกลูกค้ารายนี้ในใบขายใหม่ไม่ได้</small></span></label>{% else %}<input type="hidden" name="is_active" value="on">{% endif %}
+        <div class="form-actions"><a class="button button-secondary" href="{% url 'web:customer-list' %}">ยกเลิก</a><button class="button button-primary" type="submit">บันทึก</button></div>
+    </section>
+</form>
+{% endblock %}

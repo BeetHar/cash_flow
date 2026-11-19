@@ -25,6 +25,9 @@
 
             <nav class="primary-nav" aria-label="เมนูหลัก">
                 <a href="{% url 'web:dashboard' %}">กระแสเงินสด</a>
+                {% if can_view_receivables or can_view_purchase_orders %}<a href="{% url 'web:daily' %}">รายวัน</a>{% endif %}
+                {% if can_view_receivables %}<a href="{% url 'web:sales-invoice-list' %}">ใบขาย</a>{% endif %}
+                {% if can_view_receivables %}<a href="{% url 'web:receipt-plan-list' %}">แผนรับเงิน</a>{% endif %}
                 {% if can_view_purchase_orders %}<a href="{% url 'web:purchase-order-list' %}">ใบสั่งซื้อ</a>{% endif %}
                 {% if can_view_purchase_orders %}<a href="{% url 'web:supplier-list' %}">ผู้ขาย</a>{% endif %}
                 {% if can_manage_users %}<a href="{% url 'web:user-list' %}">ผู้ใช้</a>{% endif %}

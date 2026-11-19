@@ -6,6 +6,7 @@ from cashflow.modules.procurement.policies import (
     can_manage_suppliers,
     can_view_purchase_orders,
 )
+from cashflow.modules.receivables.policies import can_manage_receivables, can_view_receivables
 
 
 def identity_capabilities(request: HttpRequest) -> dict[str, bool]:
@@ -25,4 +26,11 @@ def procurement_capabilities(request: HttpRequest) -> dict[str, bool]:
         "can_view_purchase_orders": can_view_purchase_orders(principal),
         "can_manage_purchase_orders": can_manage_purchase_orders(principal),
         "can_manage_suppliers": can_manage_suppliers(principal),
+    }
+
+
+def receivables_capabilities(request: HttpRequest) -> dict[str, bool]:
+    return {
+        "can_view_receivables": can_view_receivables(request.user),
+        "can_manage_receivables": can_manage_receivables(request.user),
     }

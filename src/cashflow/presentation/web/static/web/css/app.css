@@ -1821,3 +1821,106 @@ a.field-help {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
+
+/* รับเงินและหน้ารายวัน */
+
+.invoice-open { color: #6f5210; background: #f6ebcc; }
+.invoice-received { color: #17643f; background: #d7f2e3; }
+.invoice-cancelled { color: #865457; background: #f7e7e8; }
+.amount-in { color: var(--mint-600); }
+.import-summary .summary-out strong { color: var(--danger); }
+
+.kind-in-actual { color: white; background: var(--mint-600); }
+.kind-in-expected { color: #17643f; background: #d7f2e3; }
+.kind-in-plan { color: #6f5210; background: #f6ebcc; }
+.kind-out-expected { color: #865457; background: #f7e7e8; }
+
+.view-toggle {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: #eef3f0;
+    border-radius: 999px;
+}
+
+.view-toggle a {
+    padding: 8px 16px;
+    color: var(--ink-600);
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.view-toggle a[aria-current="page"] {
+    color: white;
+    background: var(--forest);
+}
+
+.daily-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.daily-filter label {
+    display: grid;
+    gap: 4px;
+    color: var(--ink-600);
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+.daily-filter input {
+    min-height: 40px;
+    padding: 7px 12px;
+    font: inherit;
+    background: #fbfcfb;
+    border: 1px solid #d8e0dc;
+    border-radius: 10px;
+}
+
+.daily-filter .field-help {
+    flex-basis: 100%;
+    margin: 0;
+}
+
+.daily-totals {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.data-table .day-row th,
+.data-table .day-row td {
+    background: #f4f7f5;
+    font-weight: 800;
+    text-align: left;
+}
+
+.data-table .day-row td.num {
+    text-align: right;
+}
+
+.row-today > :first-child {
+    box-shadow: inset 3px 0 0 var(--gold);
+}
+
+.daily-overdue {
+    display: grid;
+    gap: 4px;
+}
+
+.daily-overdue p {
+    margin: 0;
+}
+
+.plan-link-actions {
+    padding: 0 24px 20px;
+}
+
+@media (max-width: 650px) {
+    .daily-totals {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

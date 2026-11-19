@@ -1,0 +1,14 @@
+{% load web_format %}
+<section class="data-panel" aria-labelledby="history-title">
+    <div class="panel-heading"><div><h2 id="history-title">ประวัติ</h2><p>บันทึกอัตโนมัติทุกครั้งที่มีการเปลี่ยนแปลง ไม่มีใครแก้หรือลบได้</p></div></div>
+    <ol class="timeline">
+        {% for entry in history %}
+            <li class="timeline-{{ entry.action }}">
+                <strong>{{ entry.label }}</strong>
+                <span>{{ entry.actor }} · {{ entry.occurred_at|thai_datetime }}</span>
+                {% if entry.changes %}<ul class="change-list">{% for c in entry.changes %}<li><span class="change-field">{{ c.label }}</span> <del>{{ c.before }}</del> → <ins>{{ c.after }}</ins></li>{% endfor %}</ul>{% endif %}
+                {% if entry.reason %}<small>เหตุผล: {{ entry.reason }}</small>{% endif %}
+            </li>
+        {% empty %}<li><span>ยังไม่มีประวัติ</span></li>{% endfor %}
+    </ol>
+</section>

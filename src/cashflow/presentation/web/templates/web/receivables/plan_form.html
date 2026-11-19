@@ -1,0 +1,22 @@
+{% extends "web/base.html" %}
+{% block title %}แผนรับเงิน · Cash Flow{% endblock %}
+{% block content %}
+<section class="page-heading compact-heading"><div>
+    <a class="back-link" href="{% url 'web:receipt-plan-list' %}">← กลับไปหน้าแผนรับเงิน</a>
+    <p class="eyebrow">Receipt plan</p><h1>{% if plan %}แก้ไขแผน {{ plan.customer }}{% else %}เพิ่มแผนรับเงิน{% endif %}</h1>
+    <p>เช่น BJ 25,000,000 บาท วันที่ 10 พ.ย. 2569</p>
+</div></section>
+<form class="editor-layout" method="post" novalidate>{% csrf_token %}
+    <section class="editor-card">
+        {% if form.non_field_errors %}<div class="form-alert" role="alert">{% for e in form.non_field_errors %}<p>{{ e }}</p>{% endfor %}</div>{% endif %}
+        <div class="form-grid">
+            {% if form.customer %}{% include "web/procurement/_field.html" with field=form.customer span=2 %}{% endif %}
+            {% include "web/procurement/_field.html" with field=form.plan_date %}
+            {% include "web/procurement/_field.html" with field=form.amount %}
+            {% include "web/procurement/_field.html" with field=form.note span=2 %}
+            {% if form.reason %}{% include "web/procurement/_field.html" with field=form.reason span=2 %}{% endif %}
+        </div>
+        <div class="form-actions"><button class="button button-primary" type="submit">บันทึก</button></div>
+    </section>
+</form>
+{% endblock %}

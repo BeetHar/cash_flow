@@ -11,6 +11,7 @@
 | ล็อกอิน ผู้ใช้ และบทบาท | double | `src/cashflow/modules/identity/`, หน้า `auth/` และ `identity/` |
 | Audit trail | double | `src/cashflow/modules/audit/` |
 | ใบสั่งซื้อ (PO), ผู้ขาย, นำเข้า Excel | beet | `src/cashflow/modules/procurement/`, `procurement_*.py`, หน้า `procurement/` |
+| ใบขาย ลูกค้า แผนรับเงิน และหน้ารายวัน | beet | `src/cashflow/modules/receivables/`, `receivables_*.py`, หน้า `receivables/` และ `cashflow/` |
 | ไฟล์กลาง | ทั้งสองคน | `settings.py`, `urls.py`, `base.html`, `dashboard.html`, `static/`, `docs/` |
 
 รายละเอียดเต็มอยู่ที่ `.github/CODEOWNERS` เมื่อเปิด Pull Request ที่แก้ส่วนของอีกคน

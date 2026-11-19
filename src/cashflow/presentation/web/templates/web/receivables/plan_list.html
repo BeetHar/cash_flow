@@ -1,0 +1,22 @@
+{% extends "web/base.html" %}
+{% load web_format %}
+{% block title %}แผนรับเงิน · Cash Flow{% endblock %}
+{% block content %}
+<section class="page-heading">
+    <div><p class="eyebrow">Receipt plan</p><h1>แผนรับเงิน</h1><p>ประมาณการเงินเข้าจากลูกค้า แล้วผูกใบขายจริงเข้ามาเทียบ ส่วนต่างติดลบคือเงินที่ขาดจากแผน</p></div>
+    {% if can_manage_receivables %}<a class="button button-primary" href="{% url 'web:receipt-plan-create' %}"><span aria-hidden="true">＋</span> เพิ่มแผน</a>{% endif %}
+</section>
+<section class="data-panel"><div class="table-scroll"><table class="data-table">
+    <thead><tr><th scope="col">วันที่</th><th scope="col">ลูกค้า</th><th class="num" scope="col">แผน</th><th class="num" scope="col">มีบิลแล้ว</th><th class="num" scope="col">รับจริง</th><th class="num" scope="col">ส่วนต่าง</th></tr></thead>
+    <tbody>
+    {% for s in summaries %}
+        <tr>
+            <td class="nowrap"><a class="doc-link" href="{% url 'web:receipt-plan-detail' s.plan.pk %}">{{ s.plan.plan_date|thai_date }}</a></td>
+            <td>{{ s.plan.customer }}</td>
+            <td class="num">{{ s.plan.amount|money }}</td><td class="num">{{ s.invoiced|money }}</td><td class="num">{{ s.received|money }}</td>
+            <td class="num {% if s.difference < 0 %}amount-out{% else %}amount-in{% endif %}">{{ s.difference|money }}</td>
+        </tr>
+    {% empty %}<tr><td colspan="6" class="empty-cell">ยังไม่มีแผนรับเงิน</td></tr>{% endfor %}
+    </tbody>
+</table></div></section>
+{% endblock %}

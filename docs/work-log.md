@@ -65,3 +65,11 @@
 - `.gitignore` เพิ่มการกันไฟล์ข้อมูล `.xlsx` `.xls` `.xlsm` `.csv` และไฟล์ระบบปฏิบัติการ
 - ตรวจแล้วว่าไม่มีชื่อบริษัทหรือชื่อผู้ขายจริงในโค้ด เทสต์ 69 รายการผ่านด้วยค่าแบบ CI (`DJANGO_DEBUG=false`)
 - เลือกแบ่งงานตามโมดูลและ branch แทนโฟลเดอร์ของแต่ละคน (DEC-017)
+
+## 2026-11-19
+
+- ถอดเสียงไฟล์ประชุมและวิดีโอ 16 พ.ย. 2569 แล้วสรุป requirement ลง `project-context.md`
+- เพิ่มโมดูล `modules/receivables` (ลูกค้า ใบขาย แผนรับเงิน, `invoice_import.py`) และ migration `0001_initial`
+- เพิ่มหน้าเว็บ `receivables_views.py`, `receivables_forms.py`, templates ใต้ `receivables/` และ `cashflow/daily.html` พร้อมเมนู รายวัน / ใบขาย / แผนรับเงิน
+- เพิ่ม `outflow_entries` ใน procurement services ให้หน้ารายวันใช้
+- ชุดทดสอบรวม 87 รายการผ่านทั้งหมด

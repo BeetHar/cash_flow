@@ -1,6 +1,6 @@
 # Architecture
 
-อัปเดตล่าสุด: 2026-11-09
+อัปเดตล่าสุด: 2026-11-19
 
 ## เป้าหมาย
 
@@ -16,6 +16,7 @@ Docker / Compose
             ├── modules/identity           ผู้ใช้ รหัสผ่าน session และสิทธิ์
             │       └── services           จุดเรียกใช้ logic จากภายนอกโมดูล
             ├── modules/audit              Audit Event แบบ append-only
+            ├── modules/receivables        ลูกค้า ใบขาย แผนรับเงิน และนำเข้าใบขาย
             ├── modules/procurement        ผู้ขายและทะเบียนใบสั่งซื้อ
             │       ├── xlsx_reader        อ่าน .xlsx ด้วย standard library
             │       ├── supplier_import    นำเข้าผู้ขายจาก Excel ของระบบเดิม

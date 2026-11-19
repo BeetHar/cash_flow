@@ -1,0 +1,42 @@
+{% extends "web/base.html" %}
+{% load web_format %}
+{% block title %}แผนรับเงิน {{ summary.plan.customer }} · Cash Flow{% endblock %}
+{% block content %}
+{% with plan=summary.plan %}
+<section class="page-heading compact-heading po-heading"><div>
+    <a class="back-link" href="{% url 'web:receipt-plan-list' %}">← กลับไปหน้าแผนรับเงิน</a>
+    <p class="eyebrow">Receipt plan</p><h1>{{ plan.customer }}</h1><p>คาดว่าจะได้รับ {{ plan.plan_date|thai_date }}</p>
+</div>{% if can_manage %}<a class="button button-secondary" href="{% url 'web:receipt-plan-edit' plan.pk %}">แก้ไขแผน</a>{% endif %}</section>
+
+<div class="po-layout">
+    <div class="po-main">
+        <section class="data-panel">
+            <div class="panel-heading"><div><h2>ใบขายของลูกค้ารายนี้</h2><p>ติ๊กใบที่เป็นเงินก้อนของแผนนี้ แล้วกดบันทึก ใบที่อยู่ในแผนอื่นจะไม่แสดง</p></div></div>
+            <form method="post">{% csrf_token %}
+                <div class="table-scroll"><table class="data-table">
+                    <thead><tr><th scope="col"><span class="visually-hidden">เลือก</span></th><th scope="col">เลขที่</th><th scope="col">คาดว่าจะได้รับ</th><th class="num" scope="col">ยอดสุทธิ</th><th class="num" scope="col">รับจริง</th><th scope="col">สถานะ</th></tr></thead>
+                    <tbody>{% for i in candidates %}<tr>
+                        <td><input type="checkbox" name="invoices" value="{{ i.pk }}" aria-label="ผูก {{ i.number }}"{% if i.plan_id == plan.pk %} checked{% endif %}{% if not can_manage %} disabled{% endif %}></td>
+                        <td><a class="doc-link" href="{% url 'web:sales-invoice-detail' i.pk %}">{{ i.number }}</a></td>
+                        <td class="nowrap">{{ i.due_date|thai_date }}</td><td class="num">{{ i.amount|money }}</td>
+                        <td class="num">{% if i.received_amount is not None %}{{ i.received_amount|money }}{% else %}—{% endif %}</td>
+                        <td><span class="status-chip invoice-{{ i.status }}">{{ i.get_status_display }}</span></td>
+                    </tr>{% empty %}<tr><td colspan="6" class="empty-cell">ยังไม่มีใบขายของลูกค้ารายนี้</td></tr>{% endfor %}</tbody>
+                </table></div>
+                {% if can_manage and candidates %}<div class="form-actions plan-link-actions"><button class="button button-primary" type="submit">บันทึกใบขายที่ผูก</button></div>{% endif %}
+            </form>
+        </section>
+        {% include "web/receivables/_history.html" %}
+    </div>
+    <aside class="po-totals" aria-label="แผนเทียบของจริง">
+        <div class="totals-net"><span>ส่วนต่าง (รับจริง − แผน)</span><strong>฿{{ summary.difference|money }}</strong><small>{% if summary.difference < 0 %}เงินยังขาดจากแผน{% else %}รับครบตามแผนแล้ว{% endif %}</small></div>
+        <dl>
+            <div><dt>แผน</dt><dd>{{ plan.amount|money }}</dd></div>
+            <div><dt>มีบิลแล้ว</dt><dd>{{ summary.invoiced|money }}</dd></div>
+            <div><dt>รับจริง</dt><dd>{{ summary.received|money }}</dd></div>
+            <div class="totals-strong"><dt>ยังไม่มีบิล<small>นับเป็นประมาณการในหน้ารายวัน</small></dt><dd>{{ summary.outstanding|money }}</dd></div>
+        </dl>
+    </aside>
+</div>
+{% endwith %}
+{% endblock %}

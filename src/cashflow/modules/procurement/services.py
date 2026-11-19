@@ -581,3 +581,9 @@ def expected_outflows(*, actor: User, today: date | None = None) -> list[Expecte
         )
         for order in orders
     ]
+
+
+def outflow_entries(*, actor: User, start: date, end: date) -> list[ExpectedOutflow]:
+    """เงินออกที่คาดว่าจะจ่ายในช่วงวันที่ ใช้ในหน้ารายการรายวัน"""
+
+    return [row for row in expected_outflows(actor=actor) if start <= row.due_date <= end]
