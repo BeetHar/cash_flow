@@ -59,6 +59,13 @@
         {% endif %}
         {% block content %}{% endblock %}
     </main>
+
+    <div class="update-badge" role="status" aria-label="เวอร์ชันและจำนวนอัปเดต">
+        <span class="update-badge-dot" aria-hidden="true"></span>
+        <span>เวอร์ชัน {{ app_version }}</span>
+        <span class="update-badge-divider" aria-hidden="true"></span>
+        <span>อัปเดต {{ app_update_count }} ครั้ง</span>
+    </div>
 </body>
 </html>
 

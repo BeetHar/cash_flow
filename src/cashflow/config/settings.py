@@ -19,7 +19,16 @@ def env_list(name: str, default: str = "") -> list[str]:
     return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
 
 
+def env_int(name: str, default: int) -> int:
+    try:
+        return int(os.getenv(name, str(default)))
+    except (TypeError, ValueError):
+        return default
+
+
 APP_ENV = os.getenv("APP_ENV", "development")
+APP_VERSION = os.getenv("APP_VERSION", "1.0.0").strip() or "1.0.0"
+APP_UPDATE_COUNT = max(0, env_int("APP_UPDATE_COUNT", 1))
 DEBUG = env_bool("DJANGO_DEBUG", default=False)
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "")
 
@@ -71,6 +80,7 @@ TEMPLATES = [
                 "cashflow.presentation.web.context_processors.identity_capabilities",
                 "cashflow.presentation.web.context_processors.procurement_capabilities",
                 "cashflow.presentation.web.context_processors.receivables_capabilities",
+                "cashflow.presentation.web.context_processors.application_version",
             ],
         },
     },

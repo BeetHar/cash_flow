@@ -30,6 +30,8 @@ class AuthenticationViewTests(TestCase):
         self.assertContains(response, "เงินออก")
         self.assertContains(response, "เงินคงเหลือ")
         self.assertContains(response, "ข้อมูลตัวอย่าง")
+        self.assertContains(response, "เวอร์ชัน")
+        self.assertContains(response, "อัปเดต")
 
     def test_developer_console_link_is_only_shown_to_developer(self) -> None:
         self.client.force_login(self.user)

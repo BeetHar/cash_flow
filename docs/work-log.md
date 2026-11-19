@@ -73,3 +73,4 @@
 - เพิ่มหน้าเว็บ `receivables_views.py`, `receivables_forms.py`, templates ใต้ `receivables/` และ `cashflow/daily.html` พร้อมเมนู รายวัน / ใบขาย / แผนรับเงิน
 - เพิ่ม `outflow_entries` ใน procurement services ให้หน้ารายวันใช้
 - ชุดทดสอบรวม 87 รายการผ่านทั้งหมด
+- เปลี่ยนธีม Workspace เป็นโทนชมพูและเพิ่ม update badge มุมขวาล่าง แสดงเวอร์ชันและจำนวนอัปเดตจาก environment

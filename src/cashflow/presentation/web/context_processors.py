@@ -34,3 +34,12 @@ def receivables_capabilities(request: HttpRequest) -> dict[str, bool]:
         "can_view_receivables": can_view_receivables(request.user),
         "can_manage_receivables": can_manage_receivables(request.user),
     }
+
+
+def application_version(request: HttpRequest) -> dict[str, str | int]:
+    from django.conf import settings
+
+    return {
+        "app_version": settings.APP_VERSION,
+        "app_update_count": settings.APP_UPDATE_COUNT,
+    }

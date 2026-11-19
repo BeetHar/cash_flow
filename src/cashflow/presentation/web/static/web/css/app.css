@@ -1,18 +1,18 @@
 :root {
-    --ink-950: #12201c;
-    --ink-800: #263a33;
-    --ink-600: #52665e;
-    --ink-400: #819188;
-    --line: #dfe7e2;
-    --paper: #f8faf8;
+    --ink-950: #3b1730;
+    --ink-800: #59324d;
+    --ink-600: #7b5770;
+    --ink-400: #9b7a91;
+    --line: #eadfe7;
+    --paper: #fff8fb;
     --surface: #ffffff;
-    --mint-50: #edf8f2;
-    --mint-100: #d8f0e4;
-    --mint-500: #2c9b68;
-    --mint-600: #208357;
-    --forest: #173f33;
-    --forest-deep: #0d2b24;
-    --gold: #d7b86a;
+    --mint-50: #fdf0f6;
+    --mint-100: #f7d9e7;
+    --mint-500: #dc5d97;
+    --mint-600: #c84d86;
+    --forest: #a83d72;
+    --forest-deep: #792650;
+    --gold: #e3a5c2;
     --danger: #b83b42;
     --danger-bg: #fff0f0;
     --shadow: 0 24px 60px rgb(18 32 28 / 10%);
@@ -1102,6 +1102,114 @@ a:focus-visible {
     *::after {
         scroll-behavior: auto !important;
         transition: none !important;
+    }
+}
+
+/* Pink workspace theme */
+body {
+    background:
+        radial-gradient(circle at 92% 8%, rgb(243 178 207 / 18%), transparent 24rem),
+        var(--paper);
+}
+
+.topbar {
+    background: rgb(255 251 253 / 94%);
+}
+
+.primary-nav a:hover {
+    color: var(--forest-deep);
+    background: var(--mint-50);
+}
+
+.login-story {
+    background:
+        radial-gradient(circle at 15% 10%, rgb(255 211 230 / 30%), transparent 28%),
+        radial-gradient(circle at 84% 83%, rgb(255 238 246 / 18%), transparent 26%),
+        linear-gradient(145deg, #b84d82, #7a2854);
+}
+
+.login-panel {
+    background:
+        linear-gradient(rgb(255 251 253 / 96%), rgb(255 251 253 / 96%)),
+        repeating-linear-gradient(0deg, transparent 0 31px, var(--line) 32px);
+}
+
+.brand-mark,
+.table-avatar,
+.role-icon {
+    color: var(--forest);
+    background: var(--mint-50);
+}
+
+.button-primary,
+.avatar,
+.view-toggle a[aria-current="page"] {
+    background: linear-gradient(135deg, var(--forest), var(--mint-500));
+}
+
+.button-primary:hover {
+    background: var(--forest-deep);
+}
+
+.cashflow-table tbody tr:hover,
+.data-table tbody tr:hover {
+    background: #fffafd;
+}
+
+.cashflow-table tfoot th,
+.cashflow-table tfoot td,
+.data-table .day-row th,
+.data-table .day-row td {
+    background: var(--mint-50);
+    border-color: var(--mint-100);
+}
+
+.view-toggle,
+.daily-filter input {
+    background: #fdf3f7;
+    border-color: var(--line);
+}
+
+.update-badge {
+    position: fixed;
+    z-index: 50;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 8px 12px;
+    color: var(--ink-800);
+    background: rgb(255 255 255 / 94%);
+    border: 1px solid var(--mint-100);
+    border-radius: 999px;
+    box-shadow: 0 10px 30px rgb(122 40 84 / 14%);
+    backdrop-filter: blur(12px);
+    font-size: 0.75rem;
+    font-weight: 750;
+}
+
+.update-badge-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--mint-500);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px var(--mint-50);
+}
+
+.update-badge-divider {
+    width: 1px;
+    height: 14px;
+    background: var(--mint-100);
+}
+
+@media (max-width: 650px) {
+    .update-badge {
+        right: 12px;
+        bottom: 12px;
+        max-width: calc(100vw - 24px);
+        font-size: 0.68rem;
     }
 }
 
